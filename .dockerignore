@@ -1,0 +1,25 @@
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Build output
+dist
+coverage
+
+# Git metadata
+.git
+.gitignore
+
+# Local environment/secrets
+.env
+.env.*
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode
+.idea

@@ -1,0 +1,30 @@
+service: back-logali
+image: alejotamayo28/back-logali 
+
+servers:
+  web:
+    - home-server 
+
+proxy:
+  host: api-logali.alejotamayo.com
+  app_port: 3000
+  ssl: false 
+  healthcheck: 
+    path: /health
+
+registry:
+  server: ghcr.io 
+  username: alejotamayo28
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+env:
+  clear:
+    PORT: 3000
+    NODE_ENV: production
+  secret:
+    - SUPABASE_CONNECTION_STRING
+    - CORS_ORIGIN
+
+builder:
+  arch: amd64

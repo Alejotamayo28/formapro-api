@@ -1,0 +1,12 @@
+services:
+  back-logali:
+    image: back-logali
+    build:
+      context: .
+      target: production
+    container_name: back-logali
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
