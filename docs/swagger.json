@@ -400,6 +400,10 @@
 		{
 			"url": "http://localhost:3000",
 			"description": "Local Environment"
+		},
+		{
+			"url": "https://api-logali.alejotamayo.com",
+			"description": "Prodcution Environment"
 		}
 	]
 }
