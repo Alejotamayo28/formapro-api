@@ -1,0 +1,42 @@
+{
+  "name": "basic-api",
+  "version": "1.0.0",
+  "description": "Backend API TypeScript + TSOA para el dashboard de pagos FormaPro.",
+  "main": "dist/server.js",
+  "scripts": {
+    "generate": "tsoa spec-and-routes",
+    "dev": "npm run generate && ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": "npm run generate && tsc",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "payments",
+    "dashboard",
+    "supabase",
+    "tsoa",
+    "typescript"
+  ],
+  "author": "Alejandro Vergara Tamayo",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.4",
+    "@types/pg": "^8.20.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.21.0",
+    "pg-format": "^1.0.4",
+    "swagger-ui-express": "^5.0.1",
+    "tsoa": "^6.6.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.25",
+    "@types/node": "^22.13.10",
+    "@types/pg-format": "^1.0.5",
+    "@types/swagger-ui-express": "^4.1.8",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.2"
+  }
+}
