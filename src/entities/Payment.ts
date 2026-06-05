@@ -10,8 +10,8 @@ export class Payment {
     importe: number,
     moneda: PaymentCurrency,
     estado: PaymentStatus,
-    fecha: string,
-    refundedAt: string | null = null
+    fecha: Date,
+    refundedAt: Date | null = null
   ): Payment {
     return new Payment(idPago, email, nombre, curso, importe, moneda, estado, fecha, refundedAt);
   }
@@ -24,8 +24,8 @@ export class Payment {
     public readonly importe: number,
     public readonly moneda: PaymentCurrency,
     public readonly estado: PaymentStatus,
-    public readonly fecha: string,
-    public readonly refunded_at: string | null = null
+    public readonly fecha: Date,
+    public readonly refunded_at: Date | null = null
   ) { }
 
   public getIdPago(): string {
@@ -56,11 +56,11 @@ export class Payment {
     return this.estado;
   }
 
-  public getFecha(): string {
+  public getFecha(): Date {
     return this.fecha;
   }
 
-  public getRefundedAt(): string | null {
+  public getRefundedAt(): Date | null {
     return this.refunded_at;
   }
 }

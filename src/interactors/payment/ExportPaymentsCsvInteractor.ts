@@ -1,11 +1,23 @@
-import { PaymentFilters } from '../../entities/Payment';
-import { findAllPayments } from '../../gateway/Payment';
+import { PoolClient } from 'pg';
+import { findPayments, PaymentFilters } from '../../gateway/Payment';
+import { onSession } from '../../gateway/supabase/Basic';
 import { paymentsToCsv } from '../../utils/csv';
-import { buildFilters } from './shared';
+
+const EXPORT_LIMIT = 100000;
 
 export const ExportPaymentsCsvInteractor = async (
-  filters: PaymentFilters = {}
+  paymentFilters?: PaymentFilters
 ): Promise<string> => {
-  const payments = await findAllPayments(buildFilters(filters));
-  return paymentsToCsv(payments);
+  return onSession(async (poolClient: PoolClient) => {
+    const response = await findPayments(
+      poolClient,
+      paymentFilters,
+      undefined,
+      undefined,
+      EXPORT_LIMIT,
+      0
+    );
+
+    return paymentsToCsv(response.payments);
+  });
 };

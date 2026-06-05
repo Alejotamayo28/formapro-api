@@ -22,68 +22,9 @@
 			"PaymentCurrency": {
 				"type": "string",
 				"enum": [
-					"COP",
-					"USD"
+					"cop",
+					"usd"
 				]
-			},
-			"TimelineChartItem": {
-				"properties": {
-					"period": {
-						"type": "string"
-					},
-					"currency": {
-						"$ref": "#/components/schemas/PaymentCurrency"
-					},
-					"amount": {
-						"type": "number",
-						"format": "double"
-					},
-					"count": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"period",
-					"currency",
-					"amount",
-					"count"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"TimelineGranularity": {
-				"type": "string",
-				"enum": [
-					"day",
-					"week",
-					"month"
-				]
-			},
-			"PaymentStatus": {
-				"type": "string",
-				"enum": [
-					"completed",
-					"failed",
-					"refunded"
-				]
-			},
-			"CountMetric": {
-				"properties": {
-					"currency": {
-						"$ref": "#/components/schemas/PaymentCurrency"
-					},
-					"count": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"currency",
-					"count"
-				],
-				"type": "object",
-				"additionalProperties": false
 			},
 			"MoneyMetric": {
 				"properties": {
@@ -102,82 +43,45 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"PaymentsSummary": {
+			"PaymentsSummaryResponse": {
 				"properties": {
-					"totalPayments": {
+					"total_payments": {
 						"type": "number",
 						"format": "double"
 					},
-					"totalRefunds": {
+					"total_refunds": {
 						"type": "number",
 						"format": "double"
 					},
-					"paymentsByCurrency": {
-						"items": {
-							"$ref": "#/components/schemas/CountMetric"
-						},
-						"type": "array"
-					},
-					"refundsByCurrency": {
-						"items": {
-							"$ref": "#/components/schemas/CountMetric"
-						},
-						"type": "array"
-					},
-					"completedRevenueByCurrency": {
+					"completed_revenue_by_currency": {
 						"items": {
 							"$ref": "#/components/schemas/MoneyMetric"
 						},
 						"type": "array"
 					},
-					"averageTicketByCurrency": {
+					"average_ticket_by_currency": {
 						"items": {
 							"$ref": "#/components/schemas/MoneyMetric"
 						},
 						"type": "array"
-					},
-					"lastUpdated": {
-						"type": "string",
-						"nullable": true
 					}
 				},
 				"required": [
-					"totalPayments",
-					"totalRefunds",
-					"paymentsByCurrency",
-					"refundsByCurrency",
-					"completedRevenueByCurrency",
-					"averageTicketByCurrency",
-					"lastUpdated"
+					"total_payments",
+					"total_refunds",
+					"completed_revenue_by_currency",
+					"average_ticket_by_currency"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
-			"StatusChartItem": {
+			"PaymentsResponse": {
 				"properties": {
-					"status": {
-						"$ref": "#/components/schemas/PaymentStatus"
-					},
-					"count": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"status",
-					"count"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"Payment": {
-				"properties": {
-					"id_pago": {
+					"pago_id": {
 						"type": "string"
 					},
 					"email": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"nombre": {
 						"type": "string",
@@ -193,27 +97,56 @@
 					"moneda": {
 						"$ref": "#/components/schemas/PaymentCurrency"
 					},
-					"estado": {
-						"$ref": "#/components/schemas/PaymentStatus"
-					},
 					"fecha": {
-						"type": "string"
+						"type": "string",
+						"format": "date-time"
 					},
 					"refunded_at": {
 						"type": "string",
+						"format": "date-time",
 						"nullable": true
 					}
 				},
 				"required": [
-					"id_pago",
+					"pago_id",
+					"email",
+					"nombre",
 					"curso",
 					"importe",
 					"moneda",
-					"estado",
-					"fecha"
+					"fecha",
+					"refunded_at"
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"PaymentsWithPagesResponse": {
+				"properties": {
+					"payments": {
+						"items": {
+							"$ref": "#/components/schemas/PaymentsResponse"
+						},
+						"type": "array"
+					},
+					"number_of_pages": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"payments",
+					"number_of_pages"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PaymentStatus": {
+				"type": "string",
+				"enum": [
+					"completed",
+					"failed",
+					"refunded"
+				]
 			},
 			"PaymentSortBy": {
 				"type": "string",
@@ -229,71 +162,12 @@
 					"refunded_at"
 				]
 			},
-			"SortOrder": {
+			"PaymentSortOrder": {
 				"type": "string",
 				"enum": [
-					"asc",
-					"desc"
+					"ASC",
+					"DESC"
 				]
-			},
-			"PaginatedPaymentsResponse": {
-				"properties": {
-					"data": {
-						"items": {
-							"$ref": "#/components/schemas/Payment"
-						},
-						"type": "array"
-					},
-					"pagination": {
-						"properties": {
-							"totalPages": {
-								"type": "number",
-								"format": "double"
-							},
-							"total": {
-								"type": "number",
-								"format": "double"
-							},
-							"pageSize": {
-								"type": "number",
-								"format": "double"
-							},
-							"page": {
-								"type": "number",
-								"format": "double"
-							}
-						},
-						"required": [
-							"totalPages",
-							"total",
-							"pageSize",
-							"page"
-						],
-						"type": "object"
-					},
-					"sort": {
-						"properties": {
-							"sortOrder": {
-								"$ref": "#/components/schemas/SortOrder"
-							},
-							"sortBy": {
-								"$ref": "#/components/schemas/PaymentSortBy"
-							}
-						},
-						"required": [
-							"sortOrder",
-							"sortBy"
-						],
-						"type": "object"
-					}
-				},
-				"required": [
-					"data",
-					"pagination",
-					"sort"
-				],
-				"type": "object",
-				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {}
@@ -326,64 +200,6 @@
 				"parameters": []
 			}
 		},
-		"/payments/charts/revenue-timeline": {
-			"get": {
-				"operationId": "GetPaymentsTimeline",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/TimelineChartItem"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Payments Charts"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "granularity",
-						"required": false,
-						"schema": {
-							"$ref": "#/components/schemas/TimelineGranularity"
-						}
-					},
-					{
-						"in": "query",
-						"name": "currency",
-						"required": false,
-						"schema": {
-							"$ref": "#/components/schemas/PaymentCurrency"
-						}
-					},
-					{
-						"in": "query",
-						"name": "status",
-						"required": false,
-						"schema": {
-							"$ref": "#/components/schemas/PaymentStatus"
-						}
-					},
-					{
-						"in": "query",
-						"name": "course",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
 		"/payments/summary": {
 			"get": {
 				"operationId": "GetPaymentsSummary",
@@ -393,7 +209,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/PaymentsSummary"
+									"$ref": "#/components/schemas/PaymentsSummaryResponse"
 								}
 							}
 						}
@@ -404,72 +220,6 @@
 				],
 				"security": [],
 				"parameters": [
-					{
-						"in": "query",
-						"name": "status",
-						"required": false,
-						"schema": {
-							"$ref": "#/components/schemas/PaymentStatus"
-						}
-					},
-					{
-						"in": "query",
-						"name": "currency",
-						"required": false,
-						"schema": {
-							"$ref": "#/components/schemas/PaymentCurrency"
-						}
-					},
-					{
-						"in": "query",
-						"name": "course",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/payments/charts/status": {
-			"get": {
-				"operationId": "GetPaymentsStatusChart",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"items": {
-										"$ref": "#/components/schemas/StatusChartItem"
-									},
-									"type": "array"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Payments Charts"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "status",
-						"required": false,
-						"schema": {
-							"$ref": "#/components/schemas/PaymentStatus"
-						}
-					},
-					{
-						"in": "query",
-						"name": "currency",
-						"required": false,
-						"schema": {
-							"$ref": "#/components/schemas/PaymentCurrency"
-						}
-					},
 					{
 						"in": "query",
 						"name": "course",
@@ -490,7 +240,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/PaginatedPaymentsResponse"
+									"$ref": "#/components/schemas/PaymentsWithPagesResponse"
 								}
 							}
 						}
@@ -527,20 +277,18 @@
 					},
 					{
 						"in": "query",
-						"name": "page",
+						"name": "name",
 						"required": false,
 						"schema": {
-							"format": "double",
-							"type": "number"
+							"type": "string"
 						}
 					},
 					{
 						"in": "query",
-						"name": "pageSize",
+						"name": "email",
 						"required": false,
 						"schema": {
-							"format": "double",
-							"type": "number"
+							"type": "string"
 						}
 					},
 					{
@@ -556,7 +304,25 @@
 						"name": "sortOrder",
 						"required": false,
 						"schema": {
-							"$ref": "#/components/schemas/SortOrder"
+							"$ref": "#/components/schemas/PaymentSortOrder"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "offset",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
 						}
 					}
 				]
@@ -601,6 +367,22 @@
 					{
 						"in": "query",
 						"name": "course",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "email",
 						"required": false,
 						"schema": {
 							"type": "string"

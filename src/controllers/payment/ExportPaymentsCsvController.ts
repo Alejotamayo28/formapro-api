@@ -1,5 +1,6 @@
 import { Controller, Get, Produces, Query, Route, Tags } from 'tsoa';
 import { PaymentCurrency, PaymentStatus } from '../../entities/Payment';
+import { PaymentFilters } from '../../gateway/Payment';
 import { ExportPaymentsCsvInteractor } from '../../interactors/payment/ExportPaymentsCsvInteractor';
 
 @Route('payments')
@@ -10,13 +11,19 @@ export class ExportPaymentsCsvController extends Controller {
   public async exportPaymentsCsv(
     @Query() status?: PaymentStatus,
     @Query() currency?: PaymentCurrency,
-    @Query() course?: string
+    @Query() course?: string,
+    @Query() name?: string,
+    @Query() email?: string
   ): Promise<string> {
-    const csv = await ExportPaymentsCsvInteractor({
+    const paymentFilters: PaymentFilters = {
       status,
       currency,
       course,
-    });
+      name,
+      email,
+    };
+
+    const csv = await ExportPaymentsCsvInteractor(paymentFilters);
 
     this.setHeader('Content-Type', 'text/csv; charset=utf-8');
     this.setHeader('Content-Disposition', 'attachment; filename="payments.csv"');

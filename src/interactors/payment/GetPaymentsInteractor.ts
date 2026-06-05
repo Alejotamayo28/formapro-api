@@ -1,17 +1,17 @@
 import { PoolClient } from 'pg';
 import { findPayments, PaymentFilters, PaymentSortBy, PaymentSortOrder } from '../../gateway/Payment';
 import { onSession } from '../../gateway/supabase/Basic';
-
+import { PaymentCurrency } from '../../entities/Payment';
 
 export interface PaymentsResponse {
   pago_id: string,
   email: string,
-  nombre: string,
+  nombre: string | null,
   curso: string,
-  importe: string,
-  moneda: string,
+  importe: number
+  moneda: PaymentCurrency,
   fecha: Date,
-  refunded_at: Date
+  refunded_at: Date | null
 }
 
 export interface PaymentsWithPagesResponse {
@@ -21,10 +21,24 @@ export interface PaymentsWithPagesResponse {
 
 export const GetPaymentsInteractor = async (
   paymentFilters?: PaymentFilters, paymentSortOrder?: PaymentSortOrder, paymentSortBy?: PaymentSortBy, limit?: number, offset?: number
-): Promise<PaginatedPaymentsResponse> => {
+): Promise<PaymentsWithPagesResponse> => {
   return onSession(async (poolClient: PoolClient) => {
+    const response = await findPayments(poolClient, paymentFilters, paymentSortOrder, paymentSortBy, limit, offset);
 
-    return findPayments(poolClient, paymentFilters, paymentSortOrder, paymentSortBy, limit, offset);
-
+    return {
+      payments: response.payments.map((payment) => {
+        return {
+          pago_id: payment.getIdPago(),
+          email: payment.getEmail(),
+          nombre: payment.getNombre(),
+          curso: payment.getCurso(),
+          importe: payment.getImporte(),
+          moneda: payment.getMoneda(),
+          fecha: payment.getFecha(),
+          refunded_at: payment.getRefundedAt()
+        }
+      }),
+      number_of_pages: response.numberOfPages
+    }
   })
 };

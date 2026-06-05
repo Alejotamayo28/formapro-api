@@ -1,73 +1,84 @@
-import {
-  CountMetric,
-  MoneyMetric,
-  Payment,
-  PaymentFilters,
-  PaymentsSummary,
-} from '../../entities/Payment';
-import { findAllPayments } from '../../gateway/Payment';
-import { buildFilters, SUPPORTED_CURRENCIES } from './shared';
+import { PoolClient } from 'pg';
+import { PaymentCurrency } from '../../entities/Payment';
+import { findPayments, PaymentFilters } from '../../gateway/Payment';
+import { onSession } from '../../gateway/supabase/Basic';
+
+const SUMMARY_LIMIT = 100000;
+
+export interface MoneyMetric {
+  currency: PaymentCurrency;
+  amount: number;
+}
+
+export interface PaymentsSummaryResponse {
+  total_payments: number;
+  total_refunds: number;
+  completed_revenue_by_currency: MoneyMetric[];
+  average_ticket_by_currency: MoneyMetric[];
+}
 
 export const GetPaymentsSummaryInteractor = async (
-  filters: PaymentFilters = {}
-): Promise<PaymentsSummary> => {
-  const payments = await findAllPayments(buildFilters(filters));
+  paymentFilters?: PaymentFilters
+): Promise<PaymentsSummaryResponse> => {
+  return onSession(async (poolClient: PoolClient) => {
+    const response = await findPayments(
+      poolClient,
+      paymentFilters,
+      undefined,
+      undefined,
+      SUMMARY_LIMIT,
+      0
+    );
 
-  return {
-    totalPayments: payments.length,
-    totalRefunds: payments.filter(isRefunded).length,
-    paymentsByCurrency: countByCurrency(payments),
-    refundsByCurrency: countByCurrency(payments.filter(isRefunded)),
-    completedRevenueByCurrency: sumCompletedRevenueByCurrency(payments),
-    averageTicketByCurrency: averageCompletedTicketByCurrency(payments),
-    lastUpdated: getLastUpdated(payments),
-  };
-};
+    const payments = response.payments;
+    const totalPayments = payments.length;
+    const totalRefunds = payments.filter(
+      payment => payment.getEstado() === 'refunded'
+    ).length;
 
-function isRefunded(payment: Payment): boolean {
-  return payment.estado === 'refunded' || Boolean(payment.refunded_at);
-}
+    const revenueByCurrency = new Map<PaymentCurrency, number>();
+    const completedCountByCurrency = new Map<PaymentCurrency, number>();
 
-function countByCurrency(payments: Payment[]): CountMetric[] {
-  return SUPPORTED_CURRENCIES
-    .map((currency) => ({
-      currency,
-      count: payments.filter((payment) => payment.moneda === currency).length,
-    }))
-    .filter((item) => item.count > 0);
-}
+    for (const payment of payments) {
+      if (payment.getEstado() !== 'completed') continue;
 
-function sumCompletedRevenueByCurrency(payments: Payment[]): MoneyMetric[] {
-  return SUPPORTED_CURRENCIES
-    .map((currency) => ({
-      currency,
-      amount: payments
-        .filter((payment) => payment.estado === 'completed' && payment.moneda === currency)
-        .reduce((total, payment) => total + payment.importe, 0),
-    }))
-    .filter((item) => item.amount > 0);
-}
+      const currency = payment.getMoneda();
+      const amount = payment.getImporte();
 
-function averageCompletedTicketByCurrency(payments: Payment[]): MoneyMetric[] {
-  return SUPPORTED_CURRENCIES
-    .map((currency) => {
-      const completedPayments = payments.filter(
-        (payment) => payment.estado === 'completed' && payment.moneda === currency
+      revenueByCurrency.set(
+        currency,
+        (revenueByCurrency.get(currency) ?? 0) + amount
       );
-      const amount = completedPayments.length
-        ? completedPayments.reduce((total, payment) => total + payment.importe, 0) / completedPayments.length
-        : 0;
 
-      return { currency, amount };
-    })
-    .filter((item) => item.amount > 0);
-}
+      completedCountByCurrency.set(
+        currency,
+        (completedCountByCurrency.get(currency) ?? 0) + 1
+      );
+    }
 
-function getLastUpdated(payments: Payment[]): string | null {
-  const timestamps = payments
-    .map((payment) => new Date(payment.fecha).getTime())
-    .filter((value) => Number.isFinite(value));
+    const completedRevenueByCurrency: MoneyMetric[] = Array.from(
+      revenueByCurrency.entries()
+    ).map(([currency, amount]) => ({
+      currency,
+      amount,
+    }));
 
-  if (!timestamps.length) return null;
-  return new Date(Math.max(...timestamps)).toISOString();
-}
+    const averageTicketByCurrency: MoneyMetric[] = Array.from(
+      revenueByCurrency.entries()
+    ).map(([currency, amount]) => {
+      const count = completedCountByCurrency.get(currency) ?? 0;
+
+      return {
+        currency,
+        amount: count === 0 ? 0 : amount / count,
+      };
+    });
+
+    return {
+      total_payments: totalPayments,
+      total_refunds: totalRefunds,
+      completed_revenue_by_currency: completedRevenueByCurrency,
+      average_ticket_by_currency: averageTicketByCurrency,
+    };
+  });
+};
