@@ -16,8 +16,20 @@ export function createApp(): Express {
 
   const swaggerDocument = readSwaggerDocument();
   if (swaggerDocument) {
-    app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-    app.get('/openapi.json', (_request, response) => response.json(swaggerDocument));
+    app.get('/openapi.json', (_request, response) => {
+      response.setHeader('Cache-Control', 'no-store');
+      response.json(swaggerDocument);
+    });
+
+    app.use(
+      '/docs',
+      swaggerUi.serve,
+      swaggerUi.setup(undefined, {
+        swaggerOptions: {
+          url: '/openapi.json',
+        },
+      }),
+    );
   }
 
   RegisterRoutes(app);
