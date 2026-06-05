@@ -98,12 +98,10 @@
 						"$ref": "#/components/schemas/PaymentCurrency"
 					},
 					"fecha": {
-						"type": "string",
-						"format": "date-time"
+						"type": "string"
 					},
 					"refunded_at": {
 						"type": "string",
-						"format": "date-time",
 						"nullable": true
 					}
 				},
@@ -144,7 +142,6 @@
 				"type": "string",
 				"enum": [
 					"completed",
-					"failed",
 					"refunded"
 				]
 			},
@@ -173,9 +170,15 @@
 		"securitySchemes": {}
 	},
 	"info": {
-		"title": "FormaPro Payments Dashboard API",
+		"title": "basic-api",
 		"version": "1.0.0",
-		"description": "API de solo lectura para consultar pagos, KPIs, gráficos y exportación CSV desde Supabase operations.payments."
+		"description": "Backend API TypeScript + TSOA para el dashboard de pagos FormaPro.",
+		"license": {
+			"name": "MIT"
+		},
+		"contact": {
+			"name": "Alejandro Vergara Tamayo"
+		}
 	},
 	"paths": {
 		"/health": {
@@ -337,7 +340,8 @@
 						"content": {
 							"text/csv": {
 								"schema": {
-									"type": "string"
+									"type": "string",
+									"format": "byte"
 								}
 							}
 						}
@@ -394,7 +398,8 @@
 	},
 	"servers": [
 		{
-			"url": "/"
+			"url": "http://localhost:3000",
+			"description": "Local Environment"
 		}
 	]
 }

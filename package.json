@@ -4,19 +4,12 @@
   "description": "Backend API TypeScript + TSOA para el dashboard de pagos FormaPro.",
   "main": "dist/server.js",
   "scripts": {
-    "generate": "tsoa spec-and-routes",
-    "dev": "npm run generate && ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "npm run generate && tsc",
+    "generate-docs": "tsoa spec-and-routes",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "build": " tsc",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit"
   },
-  "keywords": [
-    "payments",
-    "dashboard",
-    "supabase",
-    "tsoa",
-    "typescript"
-  ],
   "author": "Alejandro Vergara Tamayo",
   "license": "MIT",
   "dependencies": {

@@ -5,14 +5,13 @@
   "spec": {
     "outputDirectory": "docs",
     "specVersion": 3,
-    "basePath": "/",
-    "securityDefinitions": {},
     "spec": {
-      "info": {
-        "title": "FormaPro Payments Dashboard API",
-        "version": "1.0.0",
-        "description": "API de solo lectura para consultar pagos, KPIs, gráficos y exportación CSV desde Supabase operations.payments."
-      }
+        "servers": [
+         {
+          "url": "http://localhost:3000",
+          "description": "Local Environment"
+        }
+      ]
     }
   },
   "routes": {
@@ -20,3 +19,4 @@
     "middleware": "express"
   }
 }
+

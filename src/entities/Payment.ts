@@ -1,4 +1,4 @@
-export type PaymentStatus = 'completed' | 'failed' | 'refunded';
+export type PaymentStatus = 'completed' | 'refunded';
 export type PaymentCurrency = 'cop' | 'usd';
 
 export class Payment {

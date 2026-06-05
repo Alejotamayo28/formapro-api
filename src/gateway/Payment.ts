@@ -132,10 +132,12 @@ export const loadPayment = (row: any): Payment => {
     row.payments_email,
     row.payments_nombre,
     row.payments_curso,
-    row.payments_importe,
+    Number(row.payments_importe),
     row.payments_moneda,
     row.payments_estado,
-    row.payments_fecha,
-    row.payments_refunded_at,
+    new Date(row.payments_fecha),
+    row.payments_refunded_at ? new Date(
+      row.payments_refunded_at
+    ) : null,
   )
 };

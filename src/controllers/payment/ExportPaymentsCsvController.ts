@@ -2,6 +2,7 @@ import { Controller, Get, Produces, Query, Route, Tags } from 'tsoa';
 import { PaymentCurrency, PaymentStatus } from '../../entities/Payment';
 import { PaymentFilters } from '../../gateway/Payment';
 import { ExportPaymentsCsvInteractor } from '../../interactors/payment/ExportPaymentsCsvInteractor';
+import { Readable } from 'node:stream';
 
 @Route('payments')
 @Tags('Payments')
@@ -14,7 +15,7 @@ export class ExportPaymentsCsvController extends Controller {
     @Query() course?: string,
     @Query() name?: string,
     @Query() email?: string
-  ): Promise<string> {
+  ): Promise<Readable> {
     const paymentFilters: PaymentFilters = {
       status,
       currency,
@@ -28,6 +29,6 @@ export class ExportPaymentsCsvController extends Controller {
     this.setHeader('Content-Type', 'text/csv; charset=utf-8');
     this.setHeader('Content-Disposition', 'attachment; filename="payments.csv"');
 
-    return csv;
+    return Readable.from([csv]);
   }
 }

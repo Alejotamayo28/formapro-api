@@ -4,7 +4,7 @@ import { Pool, PoolClient } from 'pg';
 
 const connectionString = process.env.SUPABASE_CONNECTION_STRING
 if (!connectionString)
-  throw new Error(`Missing required environment variable: ${connectionString}`);
+  throw new Error(`Missing required environment variable: SUPABASE_CONNECTION_STRING`);
 
 const pool = new Pool({
   connectionString,

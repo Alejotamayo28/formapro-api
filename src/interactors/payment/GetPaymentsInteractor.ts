@@ -10,8 +10,8 @@ export interface PaymentsResponse {
   curso: string,
   importe: number
   moneda: PaymentCurrency,
-  fecha: Date,
-  refunded_at: Date | null
+  fecha: string,
+  refunded_at: string | null
 }
 
 export interface PaymentsWithPagesResponse {
@@ -34,8 +34,8 @@ export const GetPaymentsInteractor = async (
           curso: payment.getCurso(),
           importe: payment.getImporte(),
           moneda: payment.getMoneda(),
-          fecha: payment.getFecha(),
-          refunded_at: payment.getRefundedAt()
+          fecha: payment.getFecha().toISOString(),
+          refunded_at: payment.getRefundedAt()?.toISOString() || null
         }
       }),
       number_of_pages: response.numberOfPages
