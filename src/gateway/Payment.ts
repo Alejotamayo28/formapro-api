@@ -5,6 +5,7 @@ import {
 } from '../entities/Payment';
 import { PoolClient } from 'pg';
 import { getNumberOfPages } from './utils';
+import { DEFAULT_PAYMENTS_LIMIT, DEFAULT_PAYMENTS_OFFSET } from '../controllers/payment/GetPaymentsController';
 
 export interface PaymentsPagined {
   payments: Payment[],
@@ -47,7 +48,8 @@ const sqlPayment = `
 export const findPayments = async (
   poolClient: PoolClient, paymentFilters?: PaymentFilters,
   paymentSortOrder?: PaymentSortOrder, paymentSortBy?: PaymentSortBy,
-  limit: number = 10, offset: number = 0
+  limit: number = DEFAULT_PAYMENTS_LIMIT,
+  offset: number = DEFAULT_PAYMENTS_OFFSET
 ): Promise<PaymentsPagined> => {
   const conditions: string[] = []
   const values: any[] = []

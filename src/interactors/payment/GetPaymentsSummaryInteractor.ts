@@ -2,8 +2,7 @@ import { PoolClient } from 'pg';
 import { PaymentCurrency } from '../../entities/Payment';
 import { findPayments, PaymentFilters } from '../../gateway/Payment';
 import { onSession } from '../../gateway/supabase/Basic';
-
-const SUMMARY_LIMIT = 100000;
+import { DEFAULT_PAYMENTS_OFFSET, MAX_PAYMENTS_LIMIT } from '../../controllers/payment/GetPaymentsController';
 
 export interface MoneyMetric {
   currency: PaymentCurrency;
@@ -26,8 +25,8 @@ export const GetPaymentsSummaryInteractor = async (
       paymentFilters,
       undefined,
       undefined,
-      SUMMARY_LIMIT,
-      0
+      MAX_PAYMENTS_LIMIT,
+      DEFAULT_PAYMENTS_OFFSET,
     );
 
     const payments = response.payments;
