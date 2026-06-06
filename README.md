@@ -1,6 +1,66 @@
-# basic-api
+# Logali Payments API
 
-Backend API for the payments dashboard. It exposes health, payments listing, payments summary, and CSV export endpoints for payment records stored in PostgreSQL/Supabase.
+Backend API creado para la **Prueba 2** del reto técnico. Lee los pagos almacenados en Supabase/PostgreSQL y expone la información que necesita el dashboard de pagos.
+
+En este proyecto decidí separar la solución en dos partes:
+
+- **API**: se conecta a Supabase y expone endpoints seguros de lectura.
+- **Frontend**: consume esta API y muestra el dashboard de pagos.
+
+De esta forma, el navegador nunca necesita acceder a claves sensibles de Supabase.
+
+## URLs desplegadas
+
+API base URL:
+
+```txt
+https://api-logali.alejotamayo.com/
+```
+
+Documentación:
+
+```txt
+https://api-logali.alejotamayo.com/docs
+```
+
+Frontend dashboard:
+
+```txt
+https://ui-logali.alejotamayo.com/
+```
+
+## Qué expone la API
+
+La API incluye los endpoints necesarios para el dashboard:
+
+- **Health check** para validar disponibilidad del backend.
+- **Listado de pagos** con paginación, filtros y ordenamiento.
+- **Resumen de pagos** con métricas principales.
+- **Ingresos completados por moneda**.
+- **Ticket promedio por moneda**.
+- **Exportación CSV** de pagos filtrados.
+- **Documentación OpenAPI/Swagger**.
+
+## Seguridad
+
+Las credenciales de Supabase se usan únicamente en el backend mediante variables de entorno.
+
+La `service_role key` o cualquier credencial sensible **no está expuesta en el navegador ni está hardcodeada en el repositorio**.
+
+Variable sensible principal:
+
+```env
+SUPABASE_CONNECTION_STRING=postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+```
+
+## Cloudflare edge cache
+
+La API de producción está detrás de Cloudflare. Para reducir lecturas repetidas hacia el backend y Supabase, configuré cache en el edge únicamente para rutas seguras de lectura usadas por el dashboard:
+
+- `GET /payments`
+- `GET /payments/summary`
+
+No se cachean rutas como exportación CSV, health checks, documentación ni endpoints que puedan volverse sensibles.
 
 ## Tech stack
 
@@ -12,13 +72,6 @@ Backend API for the payments dashboard. It exposes health, payments listing, pay
 - Swagger UI
 - Docker and Docker Compose
 - Kamal deployment configuration
-
-## Prerequisites
-
-- Node.js 22 or compatible
-- npm
-- Access to a PostgreSQL/Supabase database
-- Docker, optional, for containerized usage
 
 ## Local runtime configuration
 
@@ -37,70 +90,6 @@ Configuration used by the app:
 | `PORT` | API port. Defaults to `3000` if not set. |
 | `CORS_ORIGIN` | Allowed browser origins. Use a comma-separated list for multiple origins. If omitted or set to `*`, CORS allows all origins. |
 | `SUPABASE_CONNECTION_STRING` | PostgreSQL/Supabase connection string used by the `pg` pool. Required for database-backed endpoints. |
-
-## Installation and local development
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Generate OpenAPI spec and TSOA routes:
-
-```bash
-npm run generate-docs
-```
-
-Run the development server:
-
-```bash
-npm run dev
-```
-
-Type-check the project:
-
-```bash
-npm run typecheck
-```
-
-Build production JavaScript into `dist/`:
-
-```bash
-npm run build
-```
-
-Start the built app:
-
-```bash
-npm start
-```
-
-### Example local workflow
-
-```bash
-npm install
-npm run generate-docs
-npm run dev
-```
-
-Then open:
-
-- Swagger UI: `http://localhost:3000/docs`
-- OpenAPI JSON: `http://localhost:3000/openapi.json`
-- Health check: `http://localhost:3000/health`
-
-## API documentation
-
-When `docs/swagger.json` or `docs/openapi.json` exists, the app serves:
-
-- `GET /docs` — Swagger UI
-- `GET /openapi.json` — raw OpenAPI document
-
-Configured OpenAPI servers:
-
-- Local: `http://localhost:3000`
-- Production: `https://api-logali.alejotamayo.com`
 
 ## Database assumptions
 
@@ -126,6 +115,24 @@ Expected columns:
 
 
 ## Infrastructure
+
+### Cloudflare edge cache
+
+The production API is behind Cloudflare, and repeated read requests are cached at the edge to reduce backend and Supabase load.
+
+Only safe `GET` dashboard endpoints are cached:
+
+- `GET /payments`
+- `GET /payments/summary`
+
+The following routes are not cached:
+
+- `GET /payments/export.csv`
+- `GET /health`
+- `GET /docs`
+- `GET /openapi.json`
+
+This keeps payment reads fast while avoiding cache for exports, health checks, documentation and any route that could become sensitive.
 
 ### Docker
 
@@ -187,7 +194,6 @@ flowchart TD
 
 ## Possible improvements
 
-- **Cache repeated reads:** Add caching for expensive read endpoints
 - **Local database for testing:** Add a local PostgreSQL service in Docker Compose with seed data.
 - **Automated tests:** Add integration tests for filters, sorting, pagination, summary calculations, and CSV export using the local test database.
 
