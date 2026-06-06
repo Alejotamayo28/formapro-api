@@ -1,5 +1,4 @@
 export type PaymentStatus = 'completed' | 'refunded';
-export type PaymentCurrency = 'cop' | 'usd';
 
 export class Payment {
   public static loadPayment(
@@ -8,7 +7,7 @@ export class Payment {
     nombre: string | null,
     curso: string,
     importe: number,
-    moneda: PaymentCurrency,
+    moneda: string,
     estado: PaymentStatus,
     fecha: Date,
     refundedAt: Date | null = null
@@ -22,7 +21,7 @@ export class Payment {
     public readonly nombre: string | null,
     public readonly curso: string,
     public readonly importe: number,
-    public readonly moneda: PaymentCurrency,
+    public readonly moneda: string,
     public readonly estado: PaymentStatus,
     public readonly fecha: Date,
     public readonly refunded_at: Date | null = null
@@ -48,7 +47,7 @@ export class Payment {
     return this.importe;
   }
 
-  public getMoneda(): PaymentCurrency {
+  public getMoneda(): string {
     return this.moneda;
   }
 

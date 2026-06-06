@@ -1,7 +1,6 @@
 import { PoolClient } from 'pg';
 import { findPayments, PaymentFilters, PaymentSortBy, PaymentSortOrder } from '../../gateway/Payment';
 import { onSession } from '../../gateway/supabase/Basic';
-import { PaymentCurrency } from '../../entities/Payment';
 
 export interface PaymentsResponse {
   pago_id: string,
@@ -9,7 +8,7 @@ export interface PaymentsResponse {
   nombre: string | null,
   curso: string,
   importe: number
-  moneda: PaymentCurrency,
+  moneda: string,
   fecha: string,
   refunded_at: string | null
 }

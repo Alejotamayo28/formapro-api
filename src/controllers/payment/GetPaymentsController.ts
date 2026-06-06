@@ -1,6 +1,5 @@
 import { Controller, Get, Query, Route, Tags, ValidateError } from 'tsoa';
 import {
-  PaymentCurrency,
   PaymentStatus,
 } from '../../entities/Payment';
 import { GetPaymentsInteractor, PaymentsWithPagesResponse } from '../../interactors/payment/GetPaymentsInteractor';
@@ -47,7 +46,7 @@ export class GetPaymentsController extends Controller {
   @Get('/')
   public async getPayments(
     @Query() status?: PaymentStatus,
-    @Query() currency?: PaymentCurrency,
+    @Query() currency?: string,
     @Query() course?: string,
     @Query() name?: string,
     @Query() email?: string,

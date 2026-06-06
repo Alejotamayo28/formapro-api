@@ -1,6 +1,5 @@
 import {
   Payment,
-  PaymentCurrency,
   PaymentStatus,
 } from '../entities/Payment';
 import { PoolClient } from 'pg';
@@ -13,7 +12,7 @@ export interface PaymentsPagined {
 }
 
 export interface PaymentSummaryMetric {
-  currency: PaymentCurrency;
+  currency: string;
   amount: number;
 }
 
@@ -39,7 +38,7 @@ export type PaymentSortOrder = 'ASC' | 'DESC';
 
 export interface PaymentFilters {
   status?: PaymentStatus;
-  currency?: PaymentCurrency;
+  currency?: string;
   course?: string;
   name?: string,
   email?: string
@@ -153,7 +152,7 @@ export const findPayments = async (
 interface PaymentSummaryRow {
   total_payments: number | string;
   total_refunds: number | string;
-  currency: PaymentCurrency | null;
+  currency: string | null;
   completed_revenue: number | string | null;
   average_ticket: number | string | null;
 }
@@ -202,7 +201,7 @@ export const getPaymentsSummary = async (
 
     const { rows } = await poolClient.query<PaymentSummaryRow>(sql, values);
     const currencyRows = rows.filter(
-      (row): row is PaymentSummaryRow & { currency: PaymentCurrency } => row.currency !== null
+      (row): row is PaymentSummaryRow & { currency: string } => row.currency !== null
     );
 
     return {

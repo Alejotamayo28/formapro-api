@@ -19,13 +19,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"PaymentCurrency": {
-				"type": "string",
-				"enum": [
-					"cop",
-					"usd"
-				]
-			},
 			"PaymentsResponse": {
 				"properties": {
 					"pago_id": {
@@ -46,7 +39,7 @@
 						"format": "double"
 					},
 					"moneda": {
-						"$ref": "#/components/schemas/PaymentCurrency"
+						"type": "string"
 					},
 					"fecha": {
 						"type": "string"
@@ -120,7 +113,7 @@
 			"MoneyMetric": {
 				"properties": {
 					"currency": {
-						"$ref": "#/components/schemas/PaymentCurrency"
+						"type": "string"
 					},
 					"amount": {
 						"type": "number",
@@ -236,7 +229,7 @@
 						"name": "currency",
 						"required": false,
 						"schema": {
-							"$ref": "#/components/schemas/PaymentCurrency"
+							"type": "string"
 						}
 					},
 					{
@@ -333,7 +326,7 @@
 						"name": "currency",
 						"required": false,
 						"schema": {
-							"$ref": "#/components/schemas/PaymentCurrency"
+							"type": "string"
 						}
 					},
 					{
@@ -397,7 +390,7 @@
 						"name": "currency",
 						"required": false,
 						"schema": {
-							"$ref": "#/components/schemas/PaymentCurrency"
+							"type": "string"
 						}
 					},
 					{

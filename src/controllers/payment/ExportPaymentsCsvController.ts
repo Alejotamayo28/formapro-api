@@ -1,5 +1,5 @@
 import { Controller, Get, Produces, Query, Route, Tags } from 'tsoa';
-import { PaymentCurrency, PaymentStatus } from '../../entities/Payment';
+import { PaymentStatus } from '../../entities/Payment';
 import { PaymentFilters } from '../../gateway/Payment';
 import { ExportPaymentsCsvInteractor } from '../../interactors/payment/ExportPaymentsCsvInteractor';
 import { Readable } from 'node:stream';
@@ -11,7 +11,7 @@ export class ExportPaymentsCsvController extends Controller {
   @Produces('text/csv')
   public async exportPaymentsCsv(
     @Query() status?: PaymentStatus,
-    @Query() currency?: PaymentCurrency,
+    @Query() currency?: string,
     @Query() course?: string,
     @Query() name?: string,
     @Query() email?: string

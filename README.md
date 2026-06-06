@@ -119,7 +119,7 @@ Expected columns:
 | `nombre` | Customer/student name. Can be null. |
 | `curso` | Course name. |
 | `importe` | Payment amount. |
-| `moneda` | Currency. Expected values: `cop`, `usd`. |
+| `moneda` | Currency code stored in the payment record. Dynamic values are supported by the API. |
 | `estado` | Payment status. Expected values: `completed`, `refunded`. |
 | `fecha` | Payment date/time. |
 | `refunded_at` | Refund date/time. Can be null. |

@@ -1,10 +1,9 @@
 import { PoolClient } from 'pg';
-import { PaymentCurrency } from '../../entities/Payment';
 import { getPaymentsSummary, PaymentFilters } from '../../gateway/Payment';
 import { onSession } from '../../gateway/supabase/Basic';
 
 export interface MoneyMetric {
-  currency: PaymentCurrency;
+  currency: string;
   amount: number;
 }
 

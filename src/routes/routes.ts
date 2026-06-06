@@ -26,11 +26,6 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "PaymentCurrency": {
-        "dataType": "refAlias",
-        "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["cop"]},{"dataType":"enum","enums":["usd"]}],"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "PaymentsResponse": {
         "dataType": "refObject",
         "properties": {
@@ -39,7 +34,7 @@ const models: TsoaRoute.Models = {
             "nombre": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "curso": {"dataType":"string","required":true},
             "importe": {"dataType":"double","required":true},
-            "moneda": {"ref":"PaymentCurrency","required":true},
+            "moneda": {"dataType":"string","required":true},
             "fecha": {"dataType":"string","required":true},
             "refunded_at": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
         },
@@ -73,7 +68,7 @@ const models: TsoaRoute.Models = {
     "MoneyMetric": {
         "dataType": "refObject",
         "properties": {
-            "currency": {"ref":"PaymentCurrency","required":true},
+            "currency": {"dataType":"string","required":true},
             "amount": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
@@ -138,7 +133,7 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsGetPaymentsController_getPayments: Record<string, TsoaRoute.ParameterSchema> = {
                 status: {"in":"query","name":"status","ref":"PaymentStatus"},
-                currency: {"in":"query","name":"currency","ref":"PaymentCurrency"},
+                currency: {"in":"query","name":"currency","dataType":"string"},
                 course: {"in":"query","name":"course","dataType":"string"},
                 name: {"in":"query","name":"name","dataType":"string"},
                 email: {"in":"query","name":"email","dataType":"string"},
@@ -176,7 +171,7 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsGetPaymentsSummaryController_getPaymentsSummary: Record<string, TsoaRoute.ParameterSchema> = {
                 status: {"in":"query","name":"status","ref":"PaymentStatus"},
-                currency: {"in":"query","name":"currency","ref":"PaymentCurrency"},
+                currency: {"in":"query","name":"currency","dataType":"string"},
                 course: {"in":"query","name":"course","dataType":"string"},
                 name: {"in":"query","name":"name","dataType":"string"},
                 email: {"in":"query","name":"email","dataType":"string"},
@@ -210,7 +205,7 @@ export function RegisterRoutes(app: Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsExportPaymentsCsvController_exportPaymentsCsv: Record<string, TsoaRoute.ParameterSchema> = {
                 status: {"in":"query","name":"status","ref":"PaymentStatus"},
-                currency: {"in":"query","name":"currency","ref":"PaymentCurrency"},
+                currency: {"in":"query","name":"currency","dataType":"string"},
                 course: {"in":"query","name":"course","dataType":"string"},
                 name: {"in":"query","name":"name","dataType":"string"},
                 email: {"in":"query","name":"email","dataType":"string"},
