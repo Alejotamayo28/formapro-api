@@ -8,12 +8,12 @@
     "spec": {
         "servers": [
          {
-          "url": "http://localhost:3000",
-          "description": "Local Environment"
-         },
-         {
           "url": "https://api-logali.alejotamayo.com",
           "description": "Production Environment"
+         },
+         {
+          "url": "http://localhost:3000",
+          "description": "Local Environment"
          }
       ]
     }
