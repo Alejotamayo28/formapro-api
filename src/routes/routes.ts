@@ -6,9 +6,9 @@ import {  fetchMiddlewares, ExpressTemplateService } from '@tsoa/runtime';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { HealthController } from './../controllers/health';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { GetPaymentsSummaryController } from './../controllers/payment/GetPaymentsSummaryController';
-// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { GetPaymentsController } from './../controllers/payment/GetPaymentsController';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { GetPaymentsSummaryController } from './../controllers/payment/GetPaymentsSummaryController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ExportPaymentsCsvController } from './../controllers/payment/ExportPaymentsCsvController';
 import type { Request as ExRequest, Response as ExResponse, RequestHandler, Router } from 'express';
@@ -29,26 +29,6 @@ const models: TsoaRoute.Models = {
     "PaymentCurrency": {
         "dataType": "refAlias",
         "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["cop"]},{"dataType":"enum","enums":["usd"]}],"validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "MoneyMetric": {
-        "dataType": "refObject",
-        "properties": {
-            "currency": {"ref":"PaymentCurrency","required":true},
-            "amount": {"dataType":"double","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "PaymentsSummaryResponse": {
-        "dataType": "refObject",
-        "properties": {
-            "total_payments": {"dataType":"double","required":true},
-            "total_refunds": {"dataType":"double","required":true},
-            "completed_revenue_by_currency": {"dataType":"array","array":{"dataType":"refObject","ref":"MoneyMetric"},"required":true},
-            "average_ticket_by_currency": {"dataType":"array","array":{"dataType":"refObject","ref":"MoneyMetric"},"required":true},
-        },
-        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "PaymentsResponse": {
@@ -88,6 +68,26 @@ const models: TsoaRoute.Models = {
     "PaymentSortOrder": {
         "dataType": "refAlias",
         "type": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["ASC"]},{"dataType":"enum","enums":["DESC"]}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "MoneyMetric": {
+        "dataType": "refObject",
+        "properties": {
+            "currency": {"ref":"PaymentCurrency","required":true},
+            "amount": {"dataType":"double","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PaymentsSummaryResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "total_payments": {"dataType":"double","required":true},
+            "total_refunds": {"dataType":"double","required":true},
+            "completed_revenue_by_currency": {"dataType":"array","array":{"dataType":"refObject","ref":"MoneyMetric"},"required":true},
+            "average_ticket_by_currency": {"dataType":"array","array":{"dataType":"refObject","ref":"MoneyMetric"},"required":true},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
@@ -136,36 +136,6 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        const argsGetPaymentsSummaryController_getPaymentsSummary: Record<string, TsoaRoute.ParameterSchema> = {
-                course: {"in":"query","name":"course","dataType":"string"},
-        };
-        app.get('/payments/summary',
-            ...(fetchMiddlewares<RequestHandler>(GetPaymentsSummaryController)),
-            ...(fetchMiddlewares<RequestHandler>(GetPaymentsSummaryController.prototype.getPaymentsSummary)),
-
-            async function GetPaymentsSummaryController_getPaymentsSummary(request: ExRequest, response: ExResponse, next: any) {
-
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args: argsGetPaymentsSummaryController_getPaymentsSummary, request, response });
-
-                const controller = new GetPaymentsSummaryController();
-
-              await templateService.apiHandler({
-                methodName: 'getPaymentsSummary',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
-        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsGetPaymentsController_getPayments: Record<string, TsoaRoute.ParameterSchema> = {
                 status: {"in":"query","name":"status","ref":"PaymentStatus"},
                 currency: {"in":"query","name":"currency","ref":"PaymentCurrency"},
@@ -193,6 +163,40 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'getPayments',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsGetPaymentsSummaryController_getPaymentsSummary: Record<string, TsoaRoute.ParameterSchema> = {
+                status: {"in":"query","name":"status","ref":"PaymentStatus"},
+                currency: {"in":"query","name":"currency","ref":"PaymentCurrency"},
+                course: {"in":"query","name":"course","dataType":"string"},
+                name: {"in":"query","name":"name","dataType":"string"},
+                email: {"in":"query","name":"email","dataType":"string"},
+        };
+        app.get('/payments/summary',
+            ...(fetchMiddlewares<RequestHandler>(GetPaymentsSummaryController)),
+            ...(fetchMiddlewares<RequestHandler>(GetPaymentsSummaryController.prototype.getPaymentsSummary)),
+
+            async function GetPaymentsSummaryController_getPaymentsSummary(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsGetPaymentsSummaryController_getPaymentsSummary, request, response });
+
+                const controller = new GetPaymentsSummaryController();
+
+              await templateService.apiHandler({
+                methodName: 'getPaymentsSummary',
                 controller,
                 response,
                 next,

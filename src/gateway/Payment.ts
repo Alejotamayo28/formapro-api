@@ -12,6 +12,18 @@ export interface PaymentsPagined {
   numberOfPages: number
 }
 
+export interface PaymentSummaryMetric {
+  currency: PaymentCurrency;
+  amount: number;
+}
+
+export interface PaymentsSummary {
+  totalPayments: number;
+  totalRefunds: number;
+  completedRevenueByCurrency: PaymentSummaryMetric[];
+  averageTicketByCurrency: PaymentSummaryMetric[];
+}
+
 export type PaymentSortBy =
   | 'id_pago'
   | 'email'
@@ -33,6 +45,46 @@ export interface PaymentFilters {
   email?: string
 }
 
+interface PaymentFilterSql {
+  whereSql: string;
+  values: any[];
+}
+
+const buildPaymentFilterSql = (paymentFilters?: PaymentFilters): PaymentFilterSql => {
+  const conditions: string[] = [];
+  const values: any[] = [];
+
+  if (paymentFilters?.status) {
+    values.push(paymentFilters.status);
+    conditions.push(`payments.estado = $${values.length}`);
+  }
+
+  if (paymentFilters?.currency) {
+    values.push(paymentFilters.currency);
+    conditions.push(`payments.moneda = $${values.length}`);
+  }
+
+  if (paymentFilters?.course) {
+    values.push(`%${paymentFilters.course}%`);
+    conditions.push(`payments.curso ILIKE $${values.length}`);
+  }
+
+  if (paymentFilters?.name) {
+    values.push(`%${paymentFilters.name}%`);
+    conditions.push(`payments.nombre ILIKE $${values.length}`);
+  }
+
+  if (paymentFilters?.email) {
+    values.push(paymentFilters.email);
+    conditions.push(`payments.email = $${values.length}`);
+  }
+
+  return {
+    whereSql: conditions.length ? `WHERE ${conditions.join(" AND ")}` : "",
+    values,
+  };
+};
+
 const sqlPayment = `
     payments.id_pago AS payments_id_pago,
     payments.email AS payments_email,
@@ -51,37 +103,8 @@ export const findPayments = async (
   limit: number = DEFAULT_PAYMENTS_LIMIT,
   offset: number = DEFAULT_PAYMENTS_OFFSET
 ): Promise<PaymentsPagined> => {
-  const conditions: string[] = []
-  const values: any[] = []
   try {
-
-    if (paymentFilters) {
-
-      if (paymentFilters.status) {
-        values.push(paymentFilters.status)
-        conditions.push(`payments.estado = $${values.length}`)
-      }
-
-      if (paymentFilters.currency) {
-        values.push(paymentFilters.currency);
-        conditions.push(`payments.moneda = $${values.length}`);
-      }
-
-      if (paymentFilters.course) {
-        values.push(`%${paymentFilters.course}%`);
-        conditions.push(`payments.curso ILIKE $${values.length}`);
-      }
-
-      if (paymentFilters.name) {
-        values.push(`%${paymentFilters.name}%`);
-        conditions.push(`payments.nombre ILIKE $${values.length}`);
-      }
-
-      if (paymentFilters.email) {
-        values.push(paymentFilters.email);
-        conditions.push(`payments.email = $${values.length}`);
-      }
-    }
+    const { whereSql, values } = buildPaymentFilterSql(paymentFilters);
 
     values.push(limit)
     const limitIndex = values.length
@@ -91,7 +114,6 @@ export const findPayments = async (
 
     const sortBy = paymentSortBy ?? "payments.fecha"
     const sortOrder = paymentSortOrder ?? "DESC"
-    const whereSql = conditions.length ? `WHERE ${conditions.join(" AND ")}` : ""
 
     const sql = `
       WITH windows_payments AS (
@@ -127,6 +149,79 @@ export const findPayments = async (
     throw new Error("ERROR_FINDING_PAYMENTS")
   }
 }
+
+interface PaymentSummaryRow {
+  total_payments: number | string;
+  total_refunds: number | string;
+  currency: PaymentCurrency | null;
+  completed_revenue: number | string | null;
+  average_ticket: number | string | null;
+}
+
+export const getPaymentsSummary = async (
+  poolClient: PoolClient,
+  paymentFilters?: PaymentFilters,
+): Promise<PaymentsSummary> => {
+  try {
+    const { whereSql, values } = buildPaymentFilterSql(paymentFilters);
+
+    const sql = `
+      WITH filtered_payments AS (
+        SELECT
+          payments.estado,
+          payments.moneda,
+          payments.importe
+        FROM operations.payments payments
+        ${whereSql}
+      ),
+      totals AS (
+        SELECT
+          COUNT(*)::int AS total_payments,
+          COUNT(*) FILTER (WHERE estado = 'refunded')::int AS total_refunds
+        FROM filtered_payments
+      ),
+      currency_metrics AS (
+        SELECT
+          moneda AS currency,
+          SUM(importe)::numeric AS completed_revenue,
+          AVG(importe)::numeric AS average_ticket
+        FROM filtered_payments
+        WHERE estado = 'completed'
+        GROUP BY moneda
+      )
+      SELECT
+        totals.total_payments,
+        totals.total_refunds,
+        currency_metrics.currency,
+        COALESCE(currency_metrics.completed_revenue, 0)::numeric AS completed_revenue,
+        COALESCE(currency_metrics.average_ticket, 0)::numeric AS average_ticket
+      FROM totals
+      LEFT JOIN currency_metrics ON true
+      ORDER BY currency_metrics.currency ASC
+    `;
+
+    const { rows } = await poolClient.query<PaymentSummaryRow>(sql, values);
+    const currencyRows = rows.filter(
+      (row): row is PaymentSummaryRow & { currency: PaymentCurrency } => row.currency !== null
+    );
+
+    return {
+      totalPayments: Number(rows[0]?.total_payments ?? 0),
+      totalRefunds: Number(rows[0]?.total_refunds ?? 0),
+      completedRevenueByCurrency: currencyRows.map(row => ({
+        currency: row.currency,
+        amount: Number(row.completed_revenue ?? 0),
+      })),
+      averageTicketByCurrency: currencyRows.map(row => ({
+        currency: row.currency,
+        amount: Number(row.average_ticket ?? 0),
+      })),
+    };
+  } catch (error) {
+    console.log(error);
+    throw new Error("ERROR_FINDING_PAYMENTS_SUMMARY");
+  }
+};
 
 export const loadPayment = (row: any): Payment => {
   return Payment.loadPayment(

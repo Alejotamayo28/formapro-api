@@ -26,55 +26,6 @@
 					"usd"
 				]
 			},
-			"MoneyMetric": {
-				"properties": {
-					"currency": {
-						"$ref": "#/components/schemas/PaymentCurrency"
-					},
-					"amount": {
-						"type": "number",
-						"format": "double"
-					}
-				},
-				"required": [
-					"currency",
-					"amount"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
-			"PaymentsSummaryResponse": {
-				"properties": {
-					"total_payments": {
-						"type": "number",
-						"format": "double"
-					},
-					"total_refunds": {
-						"type": "number",
-						"format": "double"
-					},
-					"completed_revenue_by_currency": {
-						"items": {
-							"$ref": "#/components/schemas/MoneyMetric"
-						},
-						"type": "array"
-					},
-					"average_ticket_by_currency": {
-						"items": {
-							"$ref": "#/components/schemas/MoneyMetric"
-						},
-						"type": "array"
-					}
-				},
-				"required": [
-					"total_payments",
-					"total_refunds",
-					"completed_revenue_by_currency",
-					"average_ticket_by_currency"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"PaymentsResponse": {
 				"properties": {
 					"pago_id": {
@@ -165,6 +116,55 @@
 					"ASC",
 					"DESC"
 				]
+			},
+			"MoneyMetric": {
+				"properties": {
+					"currency": {
+						"$ref": "#/components/schemas/PaymentCurrency"
+					},
+					"amount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"currency",
+					"amount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PaymentsSummaryResponse": {
+				"properties": {
+					"total_payments": {
+						"type": "number",
+						"format": "double"
+					},
+					"total_refunds": {
+						"type": "number",
+						"format": "double"
+					},
+					"completed_revenue_by_currency": {
+						"items": {
+							"$ref": "#/components/schemas/MoneyMetric"
+						},
+						"type": "array"
+					},
+					"average_ticket_by_currency": {
+						"items": {
+							"$ref": "#/components/schemas/MoneyMetric"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"total_payments",
+					"total_refunds",
+					"completed_revenue_by_currency",
+					"average_ticket_by_currency"
+				],
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {}
@@ -201,37 +201,6 @@
 				],
 				"security": [],
 				"parameters": []
-			}
-		},
-		"/payments/summary": {
-			"get": {
-				"operationId": "GetPaymentsSummary",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"$ref": "#/components/schemas/PaymentsSummaryResponse"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Payments"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "query",
-						"name": "course",
-						"required": false,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
 			}
 		},
 		"/payments": {
@@ -326,6 +295,69 @@
 						"schema": {
 							"format": "double",
 							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/payments/summary": {
+			"get": {
+				"operationId": "GetPaymentsSummary",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PaymentsSummaryResponse"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Payments"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "status",
+						"required": false,
+						"schema": {
+							"$ref": "#/components/schemas/PaymentStatus"
+						}
+					},
+					{
+						"in": "query",
+						"name": "currency",
+						"required": false,
+						"schema": {
+							"$ref": "#/components/schemas/PaymentCurrency"
+						}
+					},
+					{
+						"in": "query",
+						"name": "course",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "name",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "email",
+						"required": false,
+						"schema": {
+							"type": "string"
 						}
 					}
 				]

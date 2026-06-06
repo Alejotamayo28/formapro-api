@@ -179,5 +179,5 @@ The `Dockerfile` uses a multi-stage build:
 
 ## Known limitations and notes
 
-- Summary and CSV export currently request up to `1000` rows.
+- CSV export currently requests up to `100000` rows.
 - No authentication or autherization
