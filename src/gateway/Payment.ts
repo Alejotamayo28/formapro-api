@@ -122,7 +122,7 @@ export const findPayments = async (
           COUNT(payments.id_pago) OVER() AS count
         FROM operations.payments payments
         ${whereSql}
-        ORDER BY ${sortBy} ${sortOrder}
+        ORDER BY payments.${sortBy} ${sortOrder}
         LIMIT $${limitIndex}
         OFFSET $${limitOffset}
       )
@@ -133,7 +133,7 @@ export const findPayments = async (
         operations.payments payments
       JOIN windows_payments ON 
         payments.id_pago = windows_payments.id_pago
-      ORDER BY ${sortBy} ${sortOrder}
+      ORDER BY payments_${sortBy} ${sortOrder}
 `
     const { rows } = await poolClient.query(sql, values)
     const totalRows = Number(rows[0]?.cantidad_de_filas ?? 0)
