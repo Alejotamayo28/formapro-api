@@ -163,13 +163,27 @@ The `Dockerfile` uses a multi-stage build:
 - service: `back-logali`
 - image: `alejotamayo28/back-logali`
 - registry server: `ghcr.io`
-- web server target: `home-server`
-- proxy host: `api-logali.alejotamayo.com`
+- web server target: `home-server` (your local server)
+- proxy host: `api-logali.alejotamayo.com` (via Cloudflare Tunnel)
 - app port: `3000`
 - healthcheck path: `/health`
 - build architecture: `amd64`
 - production clear env: `PORT=3000`, `NODE_ENV=production`
 - production secret env names: `SUPABASE_CONNECTION_STRING`, `CORS_ORIGIN`
+
+## Architecture
+
+```mermaid
+flowchart TD
+    A[Developer] -->|Pushes code to| B(GitHub)
+    B -->|Builds and pushes image| C[ghcr.io]
+    C -->|Kamal pulls and deploys| D[Home server]
+    D -->|Runs| E[kamal-proxy / Traefik]
+    D -->|Runs| F[basic-api container]
+    E -->|Routes traffic to| F
+    F -->|Via Cloudflare Tunnel| G[api-logali.alejotamayo.com]
+    F -->|Connects to| H[Supabase / PostgreSQL]
+```
 
 ## Possible improvements
 
