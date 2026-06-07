@@ -111,7 +111,7 @@ export const findPayments = async (
     values.push(offset)
     const limitOffset = values.length
 
-    const sortBy = paymentSortBy ?? "payments.fecha"
+    const sortBy = paymentSortBy ?? "fecha"
     const sortOrder = paymentSortOrder ?? "DESC"
 
     const sql = `
